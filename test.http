@@ -1,0 +1,9 @@
+POST http://127.0.0.1:8000/image-info/
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="photo.jpg"
+Content-Type: image/jpeg
+
+< ./jerry.jpg
+--boundary--
