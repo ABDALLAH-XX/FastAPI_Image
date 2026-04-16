@@ -1,23 +1,29 @@
-from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import StreamingResponse # <--- Pour renvoyer l'image
-from PIL import Image
-import io
+from fastapi import FastAPI, HTTPException
 
 app = FastAPI()
 
-@app.post("/image-grayscale/")
-async def make_grayscale(file: UploadFile = File(...)):
-    # 1. Lire l'image uploadée
-    content = await file.read()
-    img = Image.open(io.BytesIO(content))
-    
-    # 2. Traitement : Convertir en Noir et Blanc (mode 'L')
-    img_gray = img.convert("L")
-    
-    # 3. Préparer le flux de sortie pour renvoyer l'image
-    img_buffer = io.BytesIO()
-    # On sauvegarde dans le buffer au format PNG par exemple
-    img_gray.save(img_buffer, format="PNG")
-    img_buffer.seek(0) # On remet le curseur au début pour la lecture
-    
-    return StreamingResponse(img_buffer, media_type="image/png")
+# Notre base de données temporaire (s'efface si tu redémarres uvicorn)
+fake_db = {
+    1: {"filename": "vacances.jpg", "width": 1920, "height": 1080},
+    2: {"filename": "logo.png", "width": 500, "height": 500}
+}
+
+# GET : Récupérer TOUS les éléments
+@app.get("/images/")
+async def list_images():
+    return fake_db
+
+# GET : Récupérer UN élément par son ID (Path Parameter)
+@app.get("/images/{image_id}")
+async def get_image_info(image_id: int):
+    if image_id not in fake_db:
+        raise HTTPException(status_code=404, detail="Image non trouvée")
+    return fake_db[image_id]
+
+# DELETE : Supprimer un élément
+@app.delete("/images/{image_id}")
+async def delete_image(image_id: int):
+    if image_id in fake_db:
+        del fake_db[image_id]
+        return {"message": f"Image {image_id} supprimée"}
+    raise HTTPException(status_code=404, detail="Image non trouvée")

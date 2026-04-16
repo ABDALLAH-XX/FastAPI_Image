@@ -1,3 +1,4 @@
+### Requête 1 : Uploader l'image et voir les infos (POST)
 POST http://127.0.0.1:8000/image-info/
 Content-Type: multipart/form-data; boundary=boundary
 
@@ -7,3 +8,15 @@ Content-Type: image/jpeg
 
 < ./jerry.jpg
 --boundary--
+
+
+### Requête 2 : Voir toute la base de données simulée (GET)
+GET http://127.0.0.1:8000/images/
+
+
+### Requête 3 : Voir une image précise (ID 1)
+GET http://127.0.0.1:8000/images/1
+
+
+### Requête 4 : Tester l'erreur 404 (ID inconnu)
+GET http://127.0.0.1:8000/images/99
