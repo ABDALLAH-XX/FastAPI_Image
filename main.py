@@ -1,4 +1,6 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, File, UploadFile
+from PIL import Image
+import io
 
 app = FastAPI()
 
@@ -19,6 +21,24 @@ async def get_image_info(image_id: int):
     if image_id not in fake_db:
         raise HTTPException(status_code=404, detail="Image non trouvée")
     return fake_db[image_id]
+
+@app.post("/images/") # On change le chemin pour être cohérent avec le GET
+async def create_image_info(file: UploadFile = File(...)):
+    content = await file.read()
+    img = Image.open(io.BytesIO(content))
+    
+    # Générer un nouvel ID
+    new_id = max(fake_db.keys()) + 1 if fake_db else 1
+    
+    # AJOUT DANS LA DB
+    fake_db[new_id] = {
+        "filename": file.filename,
+        "width": img.width,
+        "height": img.height,
+        "format": img.format
+    }
+    
+    return {"message": "Image ajoutée", "id": new_id}
 
 # DELETE : Supprimer un élément
 @app.delete("/images/{image_id}")

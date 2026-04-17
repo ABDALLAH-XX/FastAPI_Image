@@ -1,5 +1,5 @@
 ### Requête 1 : Uploader l'image et voir les infos (POST)
-POST http://127.0.0.1:8000/image-info/
+POST http://127.0.0.1:8000/images/
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
