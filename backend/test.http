@@ -1,0 +1,38 @@
+### Requête 1 : Uploader l'image et voir les infos (POST)
+POST http://127.0.0.1:8000/images/
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="photo.jpg"
+Content-Type: image/jpeg
+
+< ./photo.jpg
+--boundary--
+
+
+### Requête 2 : Voir toute la base de données simulée (GET)
+GET http://127.0.0.1:8000/images/
+
+
+### Requête 3 : Voir une image précise (ID 1)
+GET http://127.0.0.1:8000/images/1
+
+
+### Requête 4 : Tester l'erreur 404 (ID inconnu)
+GET http://127.0.0.1:8000/images/99
+
+
+### Requête 5 : Tester l'envoi d'un mauvais fichier (Validation)
+POST http://127.0.0.1:8000/images/
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="arnaque.txt"
+Content-Type: text/plain
+
+Ceci n'est pas une image, c'est du texte !
+--boundary--
+
+### Requête 6 : Appliquer le filtre Grayscale (Traitement)
+# Remplace '1' par l'ID réel généré lors de ton POST
+GET http://127.0.0.1:8000/images/1/process/grayscale
