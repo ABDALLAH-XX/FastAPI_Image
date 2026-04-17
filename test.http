@@ -6,7 +6,7 @@ Content-Type: multipart/form-data; boundary=boundary
 Content-Disposition: form-data; name="file"; filename="photo.jpg"
 Content-Type: image/jpeg
 
-< ./jerry.jpg
+< ./photo.jpg
 --boundary--
 
 
@@ -20,3 +20,15 @@ GET http://127.0.0.1:8000/images/1
 
 ### Requête 4 : Tester l'erreur 404 (ID inconnu)
 GET http://127.0.0.1:8000/images/99
+
+
+### Requête 5 : Tester l'envoi d'un mauvais fichier (Validation)
+POST http://127.0.0.1:8000/images/
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="arnaque.txt"
+Content-Type: text/plain
+
+Ceci n'est pas une image, c'est du texte !
+--boundary--

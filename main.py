@@ -24,19 +24,33 @@ async def get_image_info(image_id: int):
 
 @app.post("/images/") # On change le chemin pour être cohérent avec le GET
 async def create_image_info(file: UploadFile = File(...)):
+    # VALIDATION : Est-ce que c'est une image ? 
+    if not file.content_type.startswith("image"):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Fichier non supporté ({file.content_type}). Veuillez envoyer un image."
+        )
+
+    # Si c'est bon on continue le traitement
+
     content = await file.read()
-    img = Image.open(io.BytesIO(content))
+
+    try:
+        img = Image.open(io.BytesIO(content))
     
-    # Générer un nouvel ID
-    new_id = max(fake_db.keys()) + 1 if fake_db else 1
+        # Générer un nouvel ID
+        new_id = max(fake_db.keys()) + 1 if fake_db else 1
     
-    # AJOUT DANS LA DB
-    fake_db[new_id] = {
-        "filename": file.filename,
-        "width": img.width,
-        "height": img.height,
-        "format": img.format
-    }
+        # AJOUT DANS LA DB
+        fake_db[new_id] = {
+            "filename": file.filename,
+            "width": img.width,
+            "height": img.height,
+            "format": img.format
+        }
+    except Exception:
+        # Au cas où le fichier a une expression d'image mais est corrompu
+        raise HTTPException(status_code=400, detail="Image corrompue ou illisible")
     
     return {"message": "Image ajoutée", "id": new_id}
 
