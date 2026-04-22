@@ -1,38 +1,28 @@
-### Requête 1 : Uploader l'image et voir les infos (POST)
-POST http://127.0.0.1:8000/images/
+### Test de l'action "Gris"
+POST http://127.0.0.1:8000/process/?action=gray
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
-Content-Disposition: form-data; name="file"; filename="photo.jpg"
+Content-Disposition: form-data; name="file"; filename="mon_image.jpg"
 Content-Type: image/jpeg
 
-< ./photo.jpg
+< ./test.jpg
 --boundary--
 
-
-### Requête 2 : Voir toute la base de données simulée (GET)
-GET http://127.0.0.1:8000/images/
-
-
-### Requête 3 : Voir une image précise (ID 1)
-GET http://127.0.0.1:8000/images/1
-
-
-### Requête 4 : Tester l'erreur 404 (ID inconnu)
-GET http://127.0.0.1:8000/images/99
-
-
-### Requête 5 : Tester l'envoi d'un mauvais fichier (Validation)
-POST http://127.0.0.1:8000/images/
+### Test de l'action "Rotation"
+POST http://127.0.0.1:8000/process/?action=rotate90
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
-Content-Disposition: form-data; name="file"; filename="arnaque.txt"
-Content-Type: text/plain
+Content-Disposition: form-data; name="file"; filename="mon_image.jpg"
+Content-Type: image/jpeg
 
-Ceci n'est pas une image, c'est du texte !
+< ./test.jpg
 --boundary--
 
-### Requête 6 : Appliquer le filtre Grayscale (Traitement)
-# Remplace '1' par l'ID réel généré lors de ton POST
-GET http://127.0.0.1:8000/images/1/process/grayscale
+### Vérifier la liste des fichiers (GET)
+GET http://127.0.0.1:8000/files
+
+
+### Vérifier la santé du serveur (GET)
+GET http://127.0.0.1:8000/health

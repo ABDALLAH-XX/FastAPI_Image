@@ -2,3 +2,8 @@ __pycache__/
 uploads/*
 processed/*
 new_env/
+
+build/
+arnaque.txt
+jerry.jpg
+main.py 

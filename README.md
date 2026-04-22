@@ -1,9 +1,9 @@
 # 📸 PhotoLab - Computer Vision API & UI
 
-Application Fullstack de gestion et traitement d'images.
+Application Fullstack de gestion et traitement d'images. version C++
 
 ## 🚀 Structure du projet
-- **Backend**: FastAPI & Pillow (Traitement d'image)
+- **Backend**: FastAPI, Pillow, OpenCV, Python, C++ 
 - **Frontend**: React (Vite) & Axios
 
 ## 🛠 Installation
