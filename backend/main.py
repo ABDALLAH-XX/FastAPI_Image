@@ -9,44 +9,44 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # En prod, mets l'URL de ton front
+    allow_origins=["*"], 
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Configuration des chemins
+# Path Configuration
 UPLOAD_DIR = "uploads"
 BINARY_PATH = "./build/image_processor"
 
 @app.post("/process/")
 async def process_image(action: str, file: UploadFile = File(...)):
-    # 1. Vérifier si l'action est valide
+    # 1. Check if the action is valid
     if action not in ["gray", "rotate90"]:
-        raise HTTPException(status_code=400, detail="Action non supportée")
+        raise HTTPException(status_code=400, detail="Action is not supported")
     
-    # 2. Créer des noms de fichiers uniques pour éviter les conflits
+    # 2. Create unique namefiles to avoid conflicts
     name, ext = os.path.splitext(file.filename)
     input_path = os.path.join(UPLOAD_DIR, f"{file.filename}")
     output_path = os.path.join(UPLOAD_DIR, f"{name}_{action}{ext}")
 
-    # 3. Sauvegarder l'image envoyée par l'utilisateur
+    # 3. Save the image sent by the user
     try:
         with open(input_path, "wb") as buffer:
             buffer.write(await file.read())
 
-        # 4. APPEL DU BINAIRE C++ 
-        # On passe : <input< <output> <action>
+        # 4. CALL C++ BINARY
+        # we pass : <input< <output> <action>
         result = subprocess.run(
             [BINARY_PATH, input_path, output_path, action],
             capture_output=True,
             text=True
         )
 
-        # Vérifier si le C++ a renvoyé une erreur
+        # Check if the C++ has sent an error
         if result.returncode != 0:
-            raise HTTPException(status_code=500, f="Erreur C++: {result.stderr}")
+            raise HTTPException(status_code=500, f="C++ Error: {result.stderr}")
         
-        # 5. Renvoyer l'image traitée au client
+        # 5. Send back the image processed to the client
         return FileResponse(output_path)
     
     except Exception as e:
@@ -55,7 +55,7 @@ async def process_image(action: str, file: UploadFile = File(...)):
 
 @app.get("/files")
 async def list_files():
-    # Liste tous les fichiers dans le dossier uploads
+    # List every files on the uploads folder
     files = os.listdir(UPLOAD_DIR)
     return {"count": len(files), "files": files}
 
@@ -63,11 +63,11 @@ async def list_files():
 async def get_image(filename: str):
     file_path = os.path.join(UPLOAD_DIR, filename)
     
-    # Vérifier si le fichier existe pour éviter de faire planter le serveur
+    # Chekc if the filename exists to prevent crashing the server
     if os.path.exists(file_path):
         return FileResponse(file_path)
     
-    raise HTTPException(status_code=404, detail="Image non trouvée")
+    raise HTTPException(status_code=404, detail="Image not found")
 
 @app.get("/health")
 async def health_check():

@@ -3,7 +3,7 @@
 #include <string>
 
 int main(int argc, char** argv) {
-    // 1. Vérification des arguments
+    // 1. Check input arguments
     if (argc < 4) {
         std::cout << "Usage: " << argv[0] << " <input_image> <output_image> <action: gray|rotate90>" << std::endl;
         return -1;
@@ -13,36 +13,36 @@ int main(int argc, char** argv) {
     std::string outputPath = argv[2];
     std::string action = argv[3];
 
-    // 2. Chargement de l'image
+    // 2. LOading the image
     cv::Mat image = cv::imread(inputPath, cv::IMREAD_COLOR);
     if (image.empty()) {
-        std::cerr << "Erreur: Impossible de charger l'image." << std::endl;
+        std::cerr << "Error: Image not found." << std::endl;
         return -1;
     }
 
     cv::Mat result;
 
-    // 3. Logique de traitement
+    // 3. Imaghe operation
     if (action == "gray") {
-        // Conversion en niveaux de gris
+        // Grayscale conversion
         cv::cvtColor(image, result, cv::COLOR_BGR2GRAY);
-        std::cout << "Conversion en niveaux de gris terminée." << std::endl;
+        std::cout << "Grayscale conversion done." << std::endl;
     } 
     else if (action == "rotate90") {
-        // Rotation de 90 degrés (sens horaire)
+        // 90° clockwise rotation
         cv::rotate(image, result, cv::ROTATE_90_CLOCKWISE);
-        std::cout << "Rotation 90° terminée." << std::endl;
+        std::cout << "90° Rotation done." << std::endl;
     } 
     else {
-        std::cerr << "Action inconnue: " << action << std::endl;
+        std::cerr << "Unknown action: " << action << std::endl;
         return -1;
     }
 
-    // 4. Sauvegarde du résultat
+    // 4. Save the results on the laptop
     if (cv::imwrite(outputPath, result)) {
-        std::cout << "Image sauvegardée avec succès: " << outputPath << std::endl;
+        std::cout << "Image saved successfully: " << outputPath << std::endl;
     } else {
-        std::cerr << "Erreur lors de la sauvegarde." << std::endl;
+        std::cerr << "Error during the save." << std::endl;
         return -1;
     }
 

@@ -8,32 +8,31 @@ function App() {
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
-    setResultImage(null); // Réinitialiser si on change d'image
+    setResultImage(null); // Réinitialize if the image is changed
   };
 
   const processImage = async () => {
-    if (!file) return alert("Sélectionne une image d'abord !");
+    if (!file) return alert("Select an image :");
 
     setLoading(true);
     const formData = new FormData();
     formData.append('file', file);
 
     try {
-      // On envoie l'action en paramètre d'URL comme défini dans ton FastAPI
+      // The action is sent as an url parameter defined in respect to the API
       const response = await fetch(`http://127.0.0.1:8000/process/?action=${action}`, {
         method: 'POST',
         body: formData,
       });
 
       if (!response.ok) throw new Error("Erreur lors du traitement");
-
-      // Récupérer la réponse sous forme de blob (données binaires de l'image)
+      // The response is return in form of blob (binary data of the image)
       const blob = await response.blob();
       const imageUrl = URL.createObjectURL(blob);
       setResultImage(imageUrl);
     } catch (error) {
       console.error(error);
-      alert("Le serveur n'a pas pu traiter l'image.");
+      alert("The server couldn't processed the image.");
     } finally {
       setLoading(false);
     }
@@ -47,12 +46,12 @@ function App() {
         <input type="file" onChange={handleFileChange} accept="image/*" />
         
         <select value={action} onChange={(e) => setAction(e.target.value)} style={{ margin: '0 10px' }}>
-          <option value="gray">Niveaux de gris</option>
-          <option value="rotate90">Rotation 90°</option>
+          <option value="gray">Grayscale</option>
+          <option value="rotate90">90° Rotation</option>
         </select>
 
         <button onClick={processImage} disabled={loading}>
-          {loading ? 'Traitement en cours...' : 'Lancer le C++'}
+          {loading ? 'Processing...' : 'Launch the C++ executable '}
         </button>
       </div>
 
@@ -67,7 +66,7 @@ function App() {
         {resultImage && (
           <div>
             <h3>Résultat (via C++)</h3>
-            <img src={resultImage} alt="Résultat" style={{ maxWidth: '400px', border: '2px solid green' }} />
+            <img src={resultImage} alt="Result" style={{ maxWidth: '400px', border: '2px solid green' }} />
           </div>
         )}
       </div>

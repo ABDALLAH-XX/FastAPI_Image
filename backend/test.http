@@ -1,4 +1,4 @@
-### Test de l'action "Gris"
+### "Grey" test
 POST http://127.0.0.1:8000/process/?action=gray
 Content-Type: multipart/form-data; boundary=boundary
 
@@ -9,7 +9,7 @@ Content-Type: image/jpeg
 < ./test.jpg
 --boundary--
 
-### Test de l'action "Rotation"
+### "Rotation" test
 POST http://127.0.0.1:8000/process/?action=rotate90
 Content-Type: multipart/form-data; boundary=boundary
 
@@ -20,9 +20,9 @@ Content-Type: image/jpeg
 < ./test.jpg
 --boundary--
 
-### Vérifier la liste des fichiers (GET)
+### Check files list(GET)
 GET http://127.0.0.1:8000/files
 
 
-### Vérifier la santé du serveur (GET)
+### Check server health (GET)
 GET http://127.0.0.1:8000/health
