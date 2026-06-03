@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-docker:
+  build-and-test:
     runs-on: ubuntu-22.04
 
     steps:
@@ -15,13 +15,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2. Le build Docker 100% autonome
-    # On se déplace dans 'backend' pour que Docker lise le Dockerfile sans erreur,
-    # et on lui donne '..' (la racine) comme contexte pour qu'il trouve le code.
-    - name: Build Docker Image
+    # 2. Installer les dépendances C++ et OpenCV sur le runner GitHub
+    # (Requis uniquement pour l'étape 5 "Compile C++ Binding")
+    - name: Install System Dependencies
       run: |
-        cd backend
-        docker build -t photolab-backend:latest -f Dockerfile ..
+        sudo apt update
+        sudo apt install -y build-essential libopencv-dev python3-dev
 
     # 3. Configurer l'environnement Python
     - name: Set up Python 3.10
@@ -37,13 +36,14 @@ jobs:
         pip install pybind11 setuptools wheel
         pip install -r backend/requirements.txt
 
-    # 5. Tester la compilation du module C++
+    # 5. Tester la compilation du module C++ en natif
     - name: Compile C++ Binding
       run: |
         cd backend
         python3 setup.py build_ext --inplace
 
-    # 6. Build de l'image Docker (Vérification de sécurité)
+    # 6. Build de l'image Docker (Vérification finale et autonome)
+    # Cette syntaxe résout définitivement le problème de transfert de fichier (2B done)
     - name: Build Docker Image
       run: |
-        docker build -t photolab-backend:latest -f backend/Dockerfile .
+        docker build -t photolab-backend:latest -f ./backend/Dockerfile ./
