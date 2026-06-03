@@ -42,8 +42,14 @@ jobs:
         cd backend
         python3 setup.py build_ext --inplace
 
-    # 6. Build de l'image Docker (Vérification finale et autonome)
-    # Cette syntaxe résout définitivement le problème de transfert de fichier (2B done)
+   # 6. Build de l'image Docker (Via l'action officielle Docker)
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
     - name: Build Docker Image
-      run: |
-        docker build -t photolab-backend:latest -f ./backend/Dockerfile ./
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: backend/Dockerfile
+        push: false
+        tags: photolab-backend:latest
