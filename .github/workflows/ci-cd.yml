@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-test:
+  build-docker:
     runs-on: ubuntu-22.04
 
     steps:
@@ -15,11 +15,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2. Installer les dépendances C++ et OpenCV sur le runner GitHub
-    - name: Install System Dependencies
+    # 2. Le build Docker 100% autonome
+    # On se déplace dans 'backend' pour que Docker lise le Dockerfile sans erreur,
+    # et on lui donne '..' (la racine) comme contexte pour qu'il trouve le code.
+    - name: Build Docker Image
       run: |
-        sudo apt update
-        sudo apt install -y build-essential libopencv-dev python3-dev
+        cd backend
+        docker build -t photolab-backend:latest -f Dockerfile ..
 
     # 3. Configurer l'environnement Python
     - name: Set up Python 3.10
