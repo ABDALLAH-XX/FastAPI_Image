@@ -66,3 +66,4 @@ docker build -t photolab-backend .
 
 # Run the container
 docker run -p 8000:8000 -v $(pwd)/uploads:/app/uploads photolab-backend
+```
