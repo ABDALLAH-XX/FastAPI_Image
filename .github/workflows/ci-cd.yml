@@ -1,0 +1,46 @@
+name: Continuous Integration & Deployment
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-22.04
+
+    steps:
+    # 1. Récupérer le code du dépôt
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. Installer les dépendances C++ et OpenCV sur le runner GitHub
+    - name: Install System Dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y build-essential libopencv-dev python3-dev
+
+    # 3. Configurer l'environnement Python
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+
+    # 4. Installer les libs Python
+    - name: Install Python Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r backend/requirements.txt
+
+    # 5. Tester la compilation du module C++
+    - name: Compile C++ Binding
+      run: |
+        cd backend
+        python3 setup.py build_ext --inplace
+
+    # 6. Build de l'image Docker (Vérification de sécurité)
+    - name: Build Docker Image
+      run: |
+        docker build -t photolab-backend:latest -f backend/Dockerfile .

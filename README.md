@@ -54,3 +54,14 @@ Navigate to the frontend folder and start the Vite development server:
 - File Management: Image upload with verification and a clean structured history layout (no UI layout shifts/shaking).
 
 - Physical Clean-up: Tracks and stores processed images inside the uploads/ directory.
+
+## 🐳 Docker Deployment
+
+If you prefer to run the backend inside a isolated Docker container without polluting your host system with OpenCV libraries:
+
+```bash
+# Build the container (It will automatically compile the C++ bindings inside)
+docker build -t photolab-backend .
+
+# Run the container
+docker run -p 8000:8000 -v $(pwd)/uploads:/app/uploads photolab-backend
