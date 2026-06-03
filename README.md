@@ -1,3 +1,4 @@
+![Build Status](https://github.com/ABDALLAH-XX/FastAPI_Image/actions/workflows/ci-cd.yml/badge.svg)
 # 📸 PhotoLab - Computer Vision API & UI
 
 Fullstack application for ultra-fast image management and processing. This version leverages native C++ bindings for real-time performance without disk I/O bottlenecks.

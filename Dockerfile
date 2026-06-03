@@ -6,35 +6,40 @@ FROM python:3.10-slim AS builder
 WORKDIR /app
 
 # Installation des dépendances système requises pour compiler OpenCV et Pybind11
-RUN apt-get update && apt-get install -y --no-install-recommens \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libopencv-dev \
     python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copier les fichiers nécessaires à la compilation
+# Copier et installer les dépendances Python standards
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY backend/src/main.cpp .
+# Force l'installation de pybind11 et des outils de build dans le builder
+RUN pip install --no-cache-dir pybind11 setuptools wheel
+
+# On recrée la structure exacte : le main.cpp va dans /app/src/
+RUN mkdir -p src
+COPY backend/src/main.cpp ./src/
 COPY backend/setup.py .
 
 # Compilation du binding C++ (.so)
 RUN python3 setup.py build_ext --inplace
 
 # ==========================================
-# ÉTAPE 2 : Image finale plus légère
+# ÉTAPE 2 : Image finale stable
 # ==========================================
 FROM python:3.10-slim
 
 WORKDIR /app
 
-# OpenCV a besoin de quelques libs système minimales pour tourner (notamment glib et libGL)
+# On installe les dépendances graphiques ET libopencv-dev pour fournir les .so.410 manquants
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
-    libgl1-mesa-glx \
-    libopencv-core4.5 \
-    libopencv-imgproc4.5 \
+    libgl1 \
+    libgomp1 \
+    libopencv-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copier les dépendances Python installées de l'étape précédente
@@ -50,4 +55,4 @@ RUN mkdir -p /app/uploads
 
 EXPOSE 8000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "0.0.0.0"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
